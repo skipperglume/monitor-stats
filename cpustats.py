@@ -47,6 +47,8 @@
 
 
 import time
+import signal
+import sys
 
 def read_proc_stat():
     """
@@ -67,6 +69,13 @@ def calculate_cpu_usage(prev_idle, prev_total, curr_idle, curr_total):
     usage = (total_diff - idle_diff) / total_diff * 100
     return usage
 
+
+def graceful_exit(signal_received, frame):
+    print("\nGracefully exiting...")
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, graceful_exit)
+
 def monitor_cpu(interval=1):
     """
     Monitor and print CPU usage at regular intervals.
@@ -74,18 +83,20 @@ def monitor_cpu(interval=1):
     prev_stats = read_proc_stat()
     prev_idle, prev_total = prev_stats[3], sum(prev_stats)
     print(prev_stats)
-    while True:
-        time.sleep(interval)
-        curr_stats = read_proc_stat()
-        curr_idle, curr_total = curr_stats[3], sum(curr_stats)
+    try:
+        while True:
+            time.sleep(interval)
+            curr_stats = read_proc_stat()
+            curr_idle, curr_total = curr_stats[3], sum(curr_stats)
 
-        cpu_usage = calculate_cpu_usage(prev_idle, prev_total, curr_idle, curr_total)
+            cpu_usage = calculate_cpu_usage(prev_idle, prev_total, curr_idle, curr_total)
 
-        print(f"CPU Usage: {cpu_usage:.2f}%")
+            print(f"CPU Usage: {cpu_usage:.2f}%")
 
-        # Update previous stats
-        prev_idle, prev_total = curr_idle, curr_total
-
+            # Update previous stats
+            prev_idle, prev_total = curr_idle, curr_total
+    except KeyboardInterrupt:
+        gracefulExit(None, None)
 if __name__ == "__main__":
     monitor_cpu(1)  # Monitor CPU every 1 second
     # logging.basicConfig(level=logging.DEBUG)
