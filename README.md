@@ -3,14 +3,15 @@
 
 ### Some other commands to check CPUs:
   
- lscpu 
- nano /proc/cpuinfo
- nproc
+    lscpu 
+    nano /proc/cpuinfo
+    nproc
+    getconf _NPROCESSORS_ONLN
 
 ### Open soft:
 
- hwinfo 
- hwinfo --cpu
+    hwinfo 
+    hwinfo --cpu
 
 ### References:
  - https://github.com/rcarmo/python-utils/blob/master/cpustats.py
